@@ -1,6 +1,13 @@
 # Serving large models with Torchserve
 
 This document explain how Torchserve supports large model serving, here large model refers to the models that are not able to fit into one gpu so they need be split in multiple partitions over multiple gpus.
+This page is split into the following sections:
+- [How it works](#how-it-works)
+- [Large Model Inference with PiPPy](#pippy-pytorch-native-solution-for-large-model-inference)
+- [Large Model Inference with Deep Speed](#deepspeed)
+- [Deep Speed MII](#deepspeed-mii)
+- [Large Hugging Face Models](#serving-large-hugging-face-models-using-accelerate)
+- [Large Model Inference Tips](#large-model-inference-tips)
 
 ## How it works?
 
@@ -175,7 +182,20 @@ torch-model-archiver --model-name bloom --version 1.0 --handler deepspeed_handle
 torch-model-archiver --model-name bloom --version 1.0 --handler deepspeed_handler.py --extra-files ds-config.json -r requirements.txt --config-file model-config.yaml --archive-format
 ```
 
-## Best Practices
+## DeepSpeed MII
+If working with one of the supported models shown [here](https://github.com/microsoft/deepspeed-mii#supported-models-and-tasks) you can take advantage of Deep Speed MII. Deep Speed MII uses Deep Speed Inference along with further advances in deep learning to minimize latency and maximize throughput. It does this for specific model types, model sizes, batch sizes and available hardware resources.
+
+For more information on how to take advantage of Deep Speed MII on supported models, see the information [here](https://github.com/microsoft/DeepSpeed-MII).
+You can also find an example of how to apply this to TorchServe [here](https://github.com/pytorch/serve/tree/master/examples/large_models/deepspeed_mii).
+
+## Serving Large Hugging Face Models Using Accelerate
+
+If working with large Hugging Face models but have limited resources, you can use accelerate to serve these models. To achieve this, you would need to set `low_cpu_mem_usage=True` and set the `device_map="auto" in the setup_config.json file.
+
+For more information on using accelerate with large Hugging Face models, see [this example](https://github.com/pytorch/serve/tree/master/examples/large_models/Huggingface_accelerate).
+
+
+## Large Model Inference Tips
 
 #### Reducing model loading latency
 
@@ -218,7 +238,11 @@ In this example, a model has 2 workers with job queue size 2. An inference reque
 TorchServe's inference API supports streaming response to allow a sequence of inference responses to be sent over HTTP 1.1 chunked encoding. This feature is only recommended for the use case when the inference latency of the full response is high and the inference intermediate results are sent to the client. An example could be LLMs for generative applications, where generating "n" number of tokens can have high latency. In this case,  the user can receive each generated token once ready until the full response completes. To achieve streaming response, the backend handler calls "send_intermediate_predict_response" to send one intermediate result to the frontend, and returns the last result as the existing style. For example,
 
 ```python
-from ts.protocol.otf_message_handler import send_intermediate_predict_response
+from ts.handler_utils.utils import send_intermediate_predict_response
+''' Note: TorchServe v1.0.0 will deprecate
+"from ts.protocol.otf_message_handler import send_intermediate_predict_response".
+Please replace it with "from ts.handler_utils.utils import send_intermediate_predict_response".
+'''
 def handle(data, context):
     if type(data) is list:
         for i in range (3):
@@ -264,7 +288,12 @@ service InferenceAPIsService {
 ```
 Backend handler calls "send_intermediate_predict_response" to send one intermediate result to frontend, and return the last result as the existing style. For example
 ```python
-from ts.protocol.otf_message_handler import send_intermediate_predict_response
+from ts.handler_utils.utils import send_intermediate_predict_response
+''' Note: TorchServe v1.0.0 will deprecate
+"from ts.protocol.otf_message_handler import send_intermediate_predict_response".
+Please replace it with "from ts.handler_utils.utils import send_intermediate_predict_response".
+'''
+
 
 def handle(data, context):
     if type(data) is list:

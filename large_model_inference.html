@@ -31,11 +31,11 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="FAQ’S" href="FAQs.html" />
+    <link rel="next" title="Security Policy" href="Security.html" />
     <link rel="prev" title="TorchServe Workflows" href="workflows.html" />
   <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -87,7 +87,19 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Edge
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/edge">
+                  <span class="dropdown-title">About PyTorch Edge</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/executorch">
+                  <span class="dropdown-title">ExecuTorch</span>
+                </a>
+              </div>
+            </div>  
           </li>
 
           <li>
@@ -264,13 +276,14 @@
 <li class="toctree-l1"><a class="reference internal" href="model_zoo.html">Model Zoo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="request_envelopes.html">Request Envelopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server.html">Running TorchServe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mps.html">Running TorchServe with NVIDIA MPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nvidia_mps.html">Running TorchServe with NVIDIA MPS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snapshot.html">TorchServe model snapshot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_win_native.html">TorchServe on Windows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_wsl.html">TorchServe on Windows Subsystem for Linux (WSL)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use_cases.html">Torchserve Use Cases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">TorchServe Workflows</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Serving large models with Torchserve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQ’S</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Service APIs:</span></p>
@@ -370,7 +383,16 @@
               
   <section id="serving-large-models-with-torchserve">
 <h1>Serving large models with Torchserve<a class="headerlink" href="#serving-large-models-with-torchserve" title="Permalink to this heading">¶</a></h1>
-<p>This document explain how Torchserve supports large model serving, here large model refers to the models that are not able to fit into one gpu so they need be split in multiple partitions over multiple gpus.</p>
+<p>This document explain how Torchserve supports large model serving, here large model refers to the models that are not able to fit into one gpu so they need be split in multiple partitions over multiple gpus.
+This page is split into the following sections:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#how-it-works">How it works</a></p></li>
+<li><p><a class="reference external" href="#pippy-pytorch-native-solution-for-large-model-inference">Large Model Inference with PiPPy</a></p></li>
+<li><p><a class="reference external" href="#deepspeed">Large Model Inference with Deep Speed</a></p></li>
+<li><p><a class="reference external" href="#deepspeed-mii">Deep Speed MII</a></p></li>
+<li><p><a class="reference external" href="#serving-large-hugging-face-models-using-accelerate">Large Hugging Face Models</a></p></li>
+<li><p><a class="reference external" href="#large-model-inference-tips">Large Model Inference Tips</a></p></li>
+</ul>
 <section id="how-it-works">
 <h2>How it works?<a class="headerlink" href="#how-it-works" title="Permalink to this heading">¶</a></h2>
 <p>During deployment a worker of a large model, TorchServe utilizes <a class="reference external" href="https://pytorch.org/docs/stable/elastic/run.html">torchrun</a> to set up the distributed environment for model parallel processing. TorchServe has the capability to support multiple workers for a large model. By default, TorchServe uses a round-robin algorithm to assign GPUs to a worker on a host. In case of large models inference GPUs assigned to each worker is automatically calculated based on number of GPUs specified in the model_config.yaml. CUDA_VISIBLE_DEVICES is set based this number.</p>
@@ -510,8 +532,19 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
 </div>
 </section>
 </section>
-<section id="best-practices">
-<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<section id="deepspeed-mii">
+<h2>DeepSpeed MII<a class="headerlink" href="#deepspeed-mii" title="Permalink to this heading">¶</a></h2>
+<p>If working with one of the supported models shown <a class="reference external" href="https://github.com/microsoft/deepspeed-mii#supported-models-and-tasks">here</a> you can take advantage of Deep Speed MII. Deep Speed MII uses Deep Speed Inference along with further advances in deep learning to minimize latency and maximize throughput. It does this for specific model types, model sizes, batch sizes and available hardware resources.</p>
+<p>For more information on how to take advantage of Deep Speed MII on supported models, see the information <a class="reference external" href="https://github.com/microsoft/DeepSpeed-MII">here</a>.
+You can also find an example of how to apply this to TorchServe <a class="reference external" href="https://github.com/pytorch/serve/tree/master/examples/large_models/deepspeed_mii">here</a>.</p>
+</section>
+<section id="serving-large-hugging-face-models-using-accelerate">
+<h2>Serving Large Hugging Face Models Using Accelerate<a class="headerlink" href="#serving-large-hugging-face-models-using-accelerate" title="Permalink to this heading">¶</a></h2>
+<p>If working with large Hugging Face models but have limited resources, you can use accelerate to serve these models. To achieve this, you would need to set <code class="docutils literal notranslate"><span class="pre">low_cpu_mem_usage=True</span></code> and set the `device_map=”auto” in the setup_config.json file.</p>
+<p>For more information on using accelerate with large Hugging Face models, see <a class="reference external" href="https://github.com/pytorch/serve/tree/master/examples/large_models/Huggingface_accelerate">this example</a>.</p>
+</section>
+<section id="large-model-inference-tips">
+<h2>Large Model Inference Tips<a class="headerlink" href="#large-model-inference-tips" title="Permalink to this heading">¶</a></h2>
 <section id="reducing-model-loading-latency">
 <h3>Reducing model loading latency<a class="headerlink" href="#reducing-model-loading-latency" title="Permalink to this heading">¶</a></h3>
 <p>To reduce model latency we recommend:</p>
@@ -558,7 +591,11 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
 <section id="streaming-response-via-http-1-1-chunked-encoding">
 <h3>Streaming response via HTTP 1.1 chunked encoding<a class="headerlink" href="#streaming-response-via-http-1-1-chunked-encoding" title="Permalink to this heading">¶</a></h3>
 <p>TorchServe’s inference API supports streaming response to allow a sequence of inference responses to be sent over HTTP 1.1 chunked encoding. This feature is only recommended for the use case when the inference latency of the full response is high and the inference intermediate results are sent to the client. An example could be LLMs for generative applications, where generating “n” number of tokens can have high latency. In this case,  the user can receive each generated token once ready until the full response completes. To achieve streaming response, the backend handler calls “send_intermediate_predict_response” to send one intermediate result to the frontend, and returns the last result as the existing style. For example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ts.protocol.otf_message_handler</span> <span class="kn">import</span> <span class="n">send_intermediate_predict_response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ts.handler_utils.utils</span> <span class="kn">import</span> <span class="n">send_intermediate_predict_response</span>
+<span class="sd">&#39;&#39;&#39; Note: TorchServe v1.0.0 will deprecate</span>
+<span class="sd">&quot;from ts.protocol.otf_message_handler import send_intermediate_predict_response&quot;.</span>
+<span class="sd">Please replace it with &quot;from ts.handler_utils.utils import send_intermediate_predict_response&quot;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">3</span><span class="p">):</span>
@@ -603,7 +640,12 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
 </pre></div>
 </div>
 <p>Backend handler calls “send_intermediate_predict_response” to send one intermediate result to frontend, and return the last result as the existing style. For example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ts.protocol.otf_message_handler</span> <span class="kn">import</span> <span class="n">send_intermediate_predict_response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ts.handler_utils.utils</span> <span class="kn">import</span> <span class="n">send_intermediate_predict_response</span>
+<span class="sd">&#39;&#39;&#39; Note: TorchServe v1.0.0 will deprecate</span>
+<span class="sd">&quot;from ts.protocol.otf_message_handler import send_intermediate_predict_response&quot;.</span>
+<span class="sd">Please replace it with &quot;from ts.handler_utils.utils import send_intermediate_predict_response&quot;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
 
 <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
@@ -624,7 +666,7 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="FAQs.html" class="btn btn-neutral float-right" title="FAQ’S" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="Security.html" class="btn btn-neutral float-right" title="Security Policy" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="workflows.html" class="btn btn-neutral" title="TorchServe Workflows" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -669,7 +711,9 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
 <li><a class="reference internal" href="#how-to-use-deepspeed-in-torchserve">How to use DeepSpeed in TorchServe</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#deepspeed-mii">DeepSpeed MII</a></li>
+<li><a class="reference internal" href="#serving-large-hugging-face-models-using-accelerate">Serving Large Hugging Face Models Using Accelerate</a></li>
+<li><a class="reference internal" href="#large-model-inference-tips">Large Model Inference Tips</a><ul>
 <li><a class="reference internal" href="#reducing-model-loading-latency">Reducing model loading latency</a></li>
 <li><a class="reference internal" href="#tune-model-config-yaml-file">Tune model config YAML file</a></li>
 <li><a class="reference internal" href="#latency-sensitive-applications">Latency Sensitive Applications</a></li>
@@ -804,9 +848,9 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
         <div class="copyright">
         <p>© Copyright The Linux Foundation. The PyTorch Foundation is a project of The Linux Foundation.
           For web site terms of use, trademark policy and other policies applicable to The PyTorch Foundation please see
-          <a href="www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
+          <a href="https://www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
           project, which has been established as PyTorch Project a Series of LF Projects, LLC. For policies applicable to the PyTorch Project a Series of LF Projects, LLC,
-          please see <a href="www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
+          please see <a href="https://www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
       </div>
      </div>
 
@@ -845,7 +889,7 @@ torch-model-archiver<span class="w"> </span>--model-name<span class="w"> </span>
           </li>
             
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+            <a href="">Mobile</a>
           </li>
 
           <li>

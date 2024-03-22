@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -87,7 +87,19 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Edge
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/edge">
+                  <span class="dropdown-title">About PyTorch Edge</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/executorch">
+                  <span class="dropdown-title">ExecuTorch</span>
+                </a>
+              </div>
+            </div>  
           </li>
 
           <li>
@@ -264,13 +276,14 @@
 <li class="toctree-l1"><a class="reference internal" href="model_zoo.html">Model Zoo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="request_envelopes.html">Request Envelopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server.html">Running TorchServe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mps.html">Running TorchServe with NVIDIA MPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nvidia_mps.html">Running TorchServe with NVIDIA MPS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snapshot.html">TorchServe model snapshot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_win_native.html">TorchServe on Windows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_wsl.html">TorchServe on Windows Subsystem for Linux (WSL)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use_cases.html">Torchserve Use Cases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">TorchServe Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="large_model_inference.html">Serving large models with Torchserve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQ’S</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Service APIs:</span></p>
@@ -424,7 +437,7 @@ TorchServe needs to know the maximum batch size that the model can handle and th
 requests before this timer time’s out, it sends what ever requests that were received to the model <code class="docutils literal notranslate"><span class="pre">handler</span></code>.</p></li>
 </ol>
 <p>Let’s look at an example using this configuration through management API:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># The following command will register a model &quot;resnet-152.mar&quot; and configure TorchServe to use a batch_size of 8 and a max batch delay of 50 milliseconds. </span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># The following command will register a model &quot;resnet-152.mar&quot; and configure TorchServe to use a batch_size of 8 and a max batch delay of 50 milliseconds.</span>
 curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;localhost:8081/models?url=resnet-152.mar&amp;batch_size=8&amp;max_batch_delay=50&quot;</span>
 </pre></div>
 </div>
@@ -465,8 +478,8 @@ The frontend then tries to aggregate the batch-size number of requests and send 
 </ul>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cat config.properties
 ...
-inference_address=http://0.0.0.0:8080
-management_address=http://0.0.0.0:8081
+inference_address=http://127.0.0.1:8080
+management_address=http://127.0.0.1:8081
 ...
 $ torchserve --start --model-store model_store
 </pre></div>
@@ -532,11 +545,11 @@ $ torchserve --start --model-store model_store
 <li><p>Run inference to test the model.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>  $ curl http://localhost:8080/predictions/resnet-152-batch_v2 -T kitten.jpg
   {
-      &quot;tiger_cat&quot;: 0.5848360657691956,
-      &quot;tabby&quot;: 0.3782736361026764,
-      &quot;Egyptian_cat&quot;: 0.03441936895251274,
-      &quot;lynx&quot;: 0.0005633446853607893,
-      &quot;quilt&quot;: 0.0002698268508538604
+      &quot;tiger_cat&quot;: 0.5798614621162415,
+      &quot;tabby&quot;: 0.38344162702560425,
+      &quot;Egyptian_cat&quot;: 0.0342114195227623,
+      &quot;lynx&quot;: 0.0005819813231937587,
+      &quot;quilt&quot;: 0.000273319921689108
   }
 </pre></div>
 </div>
@@ -624,11 +637,11 @@ models={\
 <li><p>Run inference to test the model.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>  $ curl http://localhost:8080/predictions/resnet-152-batch_v2 -T kitten.jpg
   {
-      &quot;tiger_cat&quot;: 0.5848360657691956,
-      &quot;tabby&quot;: 0.3782736361026764,
-      &quot;Egyptian_cat&quot;: 0.03441936895251274,
-      &quot;lynx&quot;: 0.0005633446853607893,
-      &quot;quilt&quot;: 0.0002698268508538604
+      &quot;tiger_cat&quot;: 0.5798614621162415,
+      &quot;tabby&quot;: 0.38344162702560425,
+      &quot;Egyptian_cat&quot;: 0.0342114195227623,
+      &quot;lynx&quot;: 0.0005819813231937587,
+      &quot;quilt&quot;: 0.000273319921689108
   }
 </pre></div>
 </div>
@@ -646,9 +659,9 @@ models={\
 <ul class="simple">
 <li><p>Set the batch <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> and <code class="docutils literal notranslate"><span class="pre">max_batch_delay</span></code>  in the config.properties as referenced in the <a class="reference external" href="../docker/dockerd-entrypoint.sh">dockered_entrypoint.sh</a></p></li>
 </ul>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>inference_address=http://0.0.0.0:8080
-management_address=http://0.0.0.0:8081
-metrics_address=http://0.0.0.0:8082
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>inference_address=http://127.0.0.1:8080
+management_address=http://127.0.0.1:8081
+metrics_address=http://127.0.0.1:8082
 number_of_netty_threads=32
 job_queue_size=1000
 model_store=/home/model-server/model-store
@@ -677,7 +690,7 @@ models={\
 <ul class="simple">
 <li><p>Start serving the model with the container and pass the config.properties to the container</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>-p<span class="w"> </span><span class="m">8081</span>:8081<span class="w"> </span>--name<span class="w"> </span>mar<span class="w"> </span>-v<span class="w"> </span>/home/ubuntu/serve/model_store:/home/model-server/model-store<span class="w">  </span>-v<span class="w"> </span>$<span class="w"> </span>path<span class="w"> </span>to<span class="w"> </span>config.properties:/home/model-server/config.properties<span class="w">  </span>pytorch/torchserve:latest-gpu
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>-p<span class="w"> </span><span class="m">127</span>.0.0.1:8080:8080<span class="w"> </span>-p<span class="w"> </span><span class="m">127</span>.0.0.1:8081:8081<span class="w"> </span>--name<span class="w"> </span>mar<span class="w"> </span>-v<span class="w"> </span>/home/ubuntu/serve/model_store:/home/model-server/model-store<span class="w">  </span>-v<span class="w"> </span>$<span class="w"> </span>path<span class="w"> </span>to<span class="w"> </span>config.properties:/home/model-server/config.properties<span class="w">  </span>pytorch/torchserve:latest-gpu
 </pre></div>
 </div>
 <ul class="simple">
@@ -723,11 +736,11 @@ models={\
 <li><p>Run inference to test the model.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>  $ curl http://localhost:8080/predictions/resnet-152-batch_v2 -T kitten.jpg
   {
-      &quot;tiger_cat&quot;: 0.5848360657691956,
-      &quot;tabby&quot;: 0.3782736361026764,
-      &quot;Egyptian_cat&quot;: 0.03441936895251274,
-      &quot;lynx&quot;: 0.0005633446853607893,
-      &quot;quilt&quot;: 0.0002698268508538604
+      &quot;tiger_cat&quot;: 0.5798614621162415,
+      &quot;tabby&quot;: 0.38344162702560425,
+      &quot;Egyptian_cat&quot;: 0.0342114195227623,
+      &quot;lynx&quot;: 0.0005819813231937587,
+      &quot;quilt&quot;: 0.000273319921689108
   }
 </pre></div>
 </div>
@@ -927,9 +940,9 @@ models={\
         <div class="copyright">
         <p>© Copyright The Linux Foundation. The PyTorch Foundation is a project of The Linux Foundation.
           For web site terms of use, trademark policy and other policies applicable to The PyTorch Foundation please see
-          <a href="www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
+          <a href="https://www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
           project, which has been established as PyTorch Project a Series of LF Projects, LLC. For policies applicable to the PyTorch Project a Series of LF Projects, LLC,
-          please see <a href="www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
+          please see <a href="https://www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
       </div>
      </div>
 
@@ -968,7 +981,7 @@ models={\
           </li>
             
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+            <a href="">Mobile</a>
           </li>
 
           <li>

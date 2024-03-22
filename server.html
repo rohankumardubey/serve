@@ -31,11 +31,11 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Running TorchServe with NVIDIA MPS" href="mps.html" />
+    <link rel="next" title="Running TorchServe with NVIDIA MPS" href="nvidia_mps.html" />
     <link rel="prev" title="Request Envelopes" href="request_envelopes.html" />
   <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -87,7 +87,19 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Edge
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/edge">
+                  <span class="dropdown-title">About PyTorch Edge</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/executorch">
+                  <span class="dropdown-title">ExecuTorch</span>
+                </a>
+              </div>
+            </div>  
           </li>
 
           <li>
@@ -264,13 +276,14 @@
 <li class="toctree-l1"><a class="reference internal" href="model_zoo.html">Model Zoo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="request_envelopes.html">Request Envelopes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Running TorchServe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mps.html">Running TorchServe with NVIDIA MPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nvidia_mps.html">Running TorchServe with NVIDIA MPS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snapshot.html">TorchServe model snapshot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_win_native.html">TorchServe on Windows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_wsl.html">TorchServe on Windows Subsystem for Linux (WSL)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use_cases.html">Torchserve Use Cases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">TorchServe Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="large_model_inference.html">Serving large models with Torchserve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQ’S</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Service APIs:</span></p>
@@ -435,7 +448,7 @@ optional<span class="w"> </span>arguments:
 <span class="w">                        </span>MODEL_STORE.
 <span class="w">  </span>--log-config<span class="w"> </span>LOG_CONFIG
 <span class="w">                        </span>Log4j<span class="w"> </span>configuration<span class="w"> </span>file<span class="w"> </span><span class="k">for</span><span class="w"> </span>TorchServe
-<span class="w">  </span>--ncs,<span class="w"> </span>--no-config-snapshots<span class="w">         </span>
+<span class="w">  </span>--ncs,<span class="w"> </span>--no-config-snapshots
 <span class="w">                        </span>Disable<span class="w"> </span>snapshot<span class="w"> </span>feature
 <span class="w">  </span>--workflow-store<span class="w"> </span>WORKFLOW_STORE
 <span class="w">                        </span>Workflow<span class="w"> </span>store<span class="w"> </span>location<span class="w"> </span>where<span class="w"> </span>workflow<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>loaded.<span class="w"> </span>Defaults<span class="w"> </span>to<span class="w"> </span>model-store
@@ -466,6 +479,16 @@ b) to load all the models in model store set model value to “all”</p>
 <li><p><strong>start</strong>: optional, A more descriptive way to start the server.</p></li>
 <li><p><strong>stop</strong>: optional, Stop the server if it is already running.</p></li>
 </ol>
+</section>
+<section id="argument-priority">
+<h3>Argument Priority:<a class="headerlink" href="#argument-priority" title="Permalink to this heading">¶</a></h3>
+<p>Arguments can be set in multiple locations (ex: command line, config.properties). The following is the priority:</p>
+<ol class="simple">
+<li><p>Command line</p></li>
+<li><p>Config properties</p></li>
+<li><p>Default settings</p></li>
+</ol>
+<p>Example: Setting <code class="docutils literal notranslate"><span class="pre">model-store</span></code> in config.properties and through command line will result in the the command line location being used and overriding the config.properties.</p>
 </section>
 </section>
 <section id="advanced-features">
@@ -509,7 +532,7 @@ Let’s say you have a model named <code class="docutils literal notranslate"><s
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mps.html" class="btn btn-neutral float-right" title="Running TorchServe with NVIDIA MPS" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="nvidia_mps.html" class="btn btn-neutral float-right" title="Running TorchServe with NVIDIA MPS" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="request_envelopes.html" class="btn btn-neutral" title="Request Envelopes" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -551,6 +574,7 @@ Let’s say you have a model named <code class="docutils literal notranslate"><s
 <li><a class="reference internal" href="#model-files">Model Files</a></li>
 <li><a class="reference internal" href="#command-line-interface">Command Line Interface</a><ul>
 <li><a class="reference internal" href="#arguments">Arguments:</a></li>
+<li><a class="reference internal" href="#argument-priority">Argument Priority:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
@@ -685,9 +709,9 @@ Let’s say you have a model named <code class="docutils literal notranslate"><s
         <div class="copyright">
         <p>© Copyright The Linux Foundation. The PyTorch Foundation is a project of The Linux Foundation.
           For web site terms of use, trademark policy and other policies applicable to The PyTorch Foundation please see
-          <a href="www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
+          <a href="https://www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
           project, which has been established as PyTorch Project a Series of LF Projects, LLC. For policies applicable to the PyTorch Project a Series of LF Projects, LLC,
-          please see <a href="www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
+          please see <a href="https://www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
       </div>
      </div>
 
@@ -726,7 +750,7 @@ Let’s say you have a model named <code class="docutils literal notranslate"><s
           </li>
             
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+            <a href="">Mobile</a>
           </li>
 
           <li>

@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" type="text/css" />
   <link rel="stylesheet" href="_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -87,7 +87,19 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Edge
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/edge">
+                  <span class="dropdown-title">About PyTorch Edge</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/executorch">
+                  <span class="dropdown-title">ExecuTorch</span>
+                </a>
+              </div>
+            </div>  
           </li>
 
           <li>
@@ -264,13 +276,14 @@
 <li class="toctree-l1"><a class="reference internal" href="model_zoo.html">Model Zoo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="request_envelopes.html">Request Envelopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server.html">Running TorchServe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mps.html">Running TorchServe with NVIDIA MPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nvidia_mps.html">Running TorchServe with NVIDIA MPS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snapshot.html">TorchServe model snapshot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_win_native.html">TorchServe on Windows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchserve_on_wsl.html">TorchServe on Windows Subsystem for Linux (WSL)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use_cases.html">Torchserve Use Cases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">TorchServe Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="large_model_inference.html">Serving large models with Torchserve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQ’S</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Service APIs:</span></p>
@@ -373,6 +386,12 @@
 <p>TorchServe is a performant, flexible and easy to use tool for serving PyTorch models in production.</p>
 <p>What’s going on in TorchServe?</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://pytorch.org/blog/high-performance-llama/">High performance Llama 2 deployments with AWS Inferentia2 using TorchServe</a></p></li>
+<li><p><a class="reference external" href="https://pytorch.org/blog/ml-model-server-resource-saving/">Naver Case Study: Transition From High-Cost GPUs to Intel CPUs and oneAPI powered Software with performance</a></p></li>
+<li><p><a class="reference external" href="https://aws.amazon.com/blogs/machine-learning/run-multiple-generative-ai-models-on-gpu-using-amazon-sagemaker-multi-model-endpoints-with-torchserve-and-save-up-to-75-in-inference-costs/">Run multiple generative AI models on GPU using Amazon SageMaker multi-model endpoints with TorchServe and save up to 75% in inference costs</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/blog/products/ai-machine-learning/get-your-genai-model-going-in-four-easy-steps">Deploying your Generative AI model in only four steps with Vertex AI and PyTorch</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/tpu/docs/v5e-inference#pytorch-model-inference-and-serving">PyTorch Model Serving on Google Cloud TPUv5</a></p></li>
+<li><p><a class="reference external" href="https://www.datadoghq.com/blog/ai-integrations/#model-serving-and-deployment-vertex-ai-amazon-sagemaker-torchserve">Monitoring using Datadog</a></p></li>
 <li><p><a class="reference external" href="https://pytorch.org/blog/torchserve-performance-tuning/">Torchserve Performance Tuning, Animated Drawings Case-Study</a></p></li>
 <li><p><a class="reference external" href="https://medium.com/walmartglobaltech/search-model-serving-using-pytorch-and-torchserve-6caf9d1c5f4d">Walmart Search: Serving Models at a Scale on TorchServe</a></p></li>
 <li><p><a class="reference external" href="https://www.youtube.com/watch?v=066_Jd6cwZg">Scaling inference on CPU with TorchServe</a></p></li>
@@ -461,6 +480,34 @@
     </a>
   </div>
 </div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Metrics,Performance,Troubleshooting>
+  <div class="card tutorials-card">
+    <a href="metrics.html">
+      <div class="card-body">
+        <div class="card-title-container">
+          <h4>Metrics</h4>
+        </div>
+        <p>Topics: <span class="tags">Metrics,Performance,Troubleshooting</span></p>
+        <p class="card-summary">Collecting and viewing Torcherve metrics</p>
+        <div class="tutorials-image"><img src='https://user-images.githubusercontent.com/5276346/234725829-7f60e0d8-c76d-4019-ac8f-7d60069c4e58.png'></div>
+      </div>
+    </a>
+  </div>
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Large-Models,Performance>
+  <div class="card tutorials-card">
+    <a href="large_model_inference.html">
+      <div class="card-body">
+        <div class="card-title-container">
+          <h4>Large Model Inference</h4>
+        </div>
+        <p>Topics: <span class="tags">Large-Models,Performance</span></p>
+        <p class="card-summary">Serving Large Models with TorchServe</p>
+        <div class="tutorials-image"><img src='https://raw.githubusercontent.com/pytorch/serve/master/docs/images/ts-lmi-internal.png'></div>
+      </div>
+    </a>
+  </div>
+</div></p>
 <p><div class="col-md-12 tutorials-card-container" data-tags=Troubleshooting,Performance>
   <div class="card tutorials-card">
     <a href="Troubleshooting.html">
@@ -471,6 +518,20 @@
         <p>Topics: <span class="tags">Troubleshooting,Performance</span></p>
         <p class="card-summary">Various updates on Torcherve and use cases.</p>
         <div class="tutorials-image"><img src='https://raw.githubusercontent.com/pytorch/serve/master/benchmarks/snake_viz.png'></div>
+      </div>
+    </a>
+  </div>
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Security>
+  <div class="card tutorials-card">
+    <a href="security.html">
+      <div class="card-body">
+        <div class="card-title-container">
+          <h4>TorchServe Security Policy</h4>
+        </div>
+        <p>Topics: <span class="tags">Security</span></p>
+        <p class="card-summary">Security Policy</p>
+        <div class="tutorials-image"><img src='https://user-images.githubusercontent.com/880376/83180095-c44cc600-a0d7-11ea-97c1-23abb4cdbe4d.jpg'></div>
       </div>
     </a>
   </div>
@@ -664,9 +725,9 @@
         <div class="copyright">
         <p>© Copyright The Linux Foundation. The PyTorch Foundation is a project of The Linux Foundation.
           For web site terms of use, trademark policy and other policies applicable to The PyTorch Foundation please see
-          <a href="www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
+          <a href="https://www.linuxfoundation.org/policies/">www.linuxfoundation.org/policies/</a>. The PyTorch Foundation supports the PyTorch open source
           project, which has been established as PyTorch Project a Series of LF Projects, LLC. For policies applicable to the PyTorch Project a Series of LF Projects, LLC,
-          please see <a href="www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
+          please see <a href="https://www.lfprojects.org/policies/">www.lfprojects.org/policies/</a>.</p>
       </div>
      </div>
 
@@ -705,7 +766,7 @@
           </li>
             
           <li>
-            <a href="https://pytorch.org/mobile">Mobile</a>
+            <a href="">Mobile</a>
           </li>
 
           <li>
