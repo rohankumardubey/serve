@@ -93,15 +93,28 @@ inference_address=https://127.0.0.1:8443
 inference_address=https://172.16.1.10:8080
 ```
 
-### Configure TorchServe gRPC listening ports
-The inference gRPC API is listening on port 7070, and the management gRPC API is listening on port 7071 by default.
+### Configure TorchServe gRPC listening addresses, ports and max connection age
+The inference gRPC API is listening on port 7070, and the management gRPC API is listening on port 7071 on localhost by default.
+
+To configure different addresses use following properties
+
+* `grpc_inference_address`: Inference gRPC API IP address. Default: 127.0.0.1
+* `grpc_management_address`: Management gRPC API IP address. Default: 127.0.0.1
 
 To configure different ports use following properties
 
 * `grpc_inference_port`: Inference gRPC API binding port. Default: 7070
 * `grpc_management_port`: management gRPC API binding port. Default: 7071
 
-Here are a couple of examples:
+To configure [max connection age](https://grpc.github.io/grpc-java/javadoc/io/grpc/netty/NettyServerBuilder.html#maxConnectionAge(long,java.util.concurrent.TimeUnit)) (milliseconds)
+
+* `grpc_inference_max_connection_age_ms`: Inference gRPC max connection age. Default: Infinite
+* `grpc_management_max_connection_age_ms`: Management gRPC max connection age. Default: Infinite
+
+To configure [max connection age grace](https://grpc.github.io/grpc-java/javadoc/io/grpc/netty/NettyServerBuilder.html#maxConnectionAgeGrace(long,java.util.concurrent.TimeUnit)) (milliseconds)
+
+* `grpc_inference_max_connection_age_grace_ms`: Inference gRPC max connection age grace. Default: Infinite
+* `grpc_management_max_connection_age_grace_ms`: Management gRPC max connection age grace. Default: Infinite
 
 ### Enable SSL
 
@@ -232,6 +245,7 @@ A model's parameters are defined in [model source code](https://github.com/pytor
 * `maxWorkers`: the maximum number of workers of a model
 * `batchSize`: the batch size of a model
 * `maxBatchDelay`: the maximum delay in msec of a batch of a model
+* `startupTimeout`: the timeout in sec of a specific model's startup. This setting takes priority over `default_startup_timeout` which is a default timeout over all models
 * `responseTimeout`: the timeout in sec of a specific model's response. This setting takes priority over `default_response_timeout` which is a default timeout over all models
 * `defaultVersion`: the default version of a model
 * `marName`: the mar file name of a model
@@ -282,6 +296,7 @@ Most of the following properties are designed for performance tuning. Adjusting 
 * `job_queue_size`: Number inference jobs that frontend will queue before backend can serve. Default: 100.
 * `async_logging`: Enable asynchronous logging for higher throughput, log output may be delayed if this is enabled. Default: false.
 * `default_response_timeout`: Timeout, in seconds, used for all models backend workers before they are deemed unresponsive and rebooted. Default: 120 seconds.
+* `default_startup_timeout`: Specifies the maximum time, in seconds, allowed for model backend workers to initialize and become ready. If a worker fails to start within this timeframe, it is considered unresponsive and will be restarted. Default: 120 seconds.
 * `unregister_model_timeout`: Timeout, in seconds, used when handling an unregister model request when cleaning a process before it is deemed unresponsive and an error response is sent. Default: 120 seconds.
 * `decode_input_request`: Configuration to let backend workers to decode requests, when the content type is known.
 If this is set to "true", backend workers do "Bytearray to JSON object" conversion when the content type is "application/json" and
